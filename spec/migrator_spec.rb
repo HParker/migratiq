@@ -42,6 +42,16 @@ describe Migratiq do
 
       expect(Sidekiq::ScheduledSet.new.to_a.last['args']).to eq(['b', 'a'])
     end
+
+    it 'can transform the params with migrate_by and delete extras' do
+      MockMigratorWorker.perform_in(1, 'a', 'b', 'c', 'too many', 'matched arity migraiton plan')
+      MockMigratorWorker.perform_in(1, 'a', 'b', 'c', 'no migration plan')
+      expect {
+        MockMigratorWorker.migrate!(delete: true)
+      }.to change(Sidekiq::ScheduledSet.new, :size).by(-1)
+
+      expect(Sidekiq::ScheduledSet.new.to_a.last['args']).to eq(['b', 'a'])
+    end
   end
 
   describe '.migrate_all!' do
