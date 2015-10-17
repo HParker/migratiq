@@ -15,12 +15,12 @@ class HardWorker
     # Do work here...
   end
 
-  migrate_by(arity: 5) do |a, b, c, d, e|                                         
-    [b, a]                                                                        
-  end                                                                             
+  migrate_by(arity: 5) do |a, b, c, d, e|
+    [b, a]
+  end
 end
 
-pry> HardWorker.migrate!                                                        
+pry> HardWorker.migrate!
 ```
 
 or remove all jobs that don't match the current interface
@@ -34,7 +34,7 @@ class HardWorker
   end
 end
 
-pry> HardWorker.migrate!
+pry> HardWorker.migrate!(delete: true)
 ```
 
 ## Installation
@@ -87,7 +87,7 @@ class HardWorker
   end
 end
 
-pry>HardWorker.migrate!
+pry>HardWorker.migrate!(delete: true)
 ```
 
 It will remove all the jobs that do not match the current arity of the perform function.
@@ -98,18 +98,18 @@ class HardWorker
   include Migratiq
 
   def perform(a, b)
-  
+
   end
 
-  migrate_by(arity: 4) do |a, b, c, d|                                         
-    [b, a]                                                                        
-  end                                                                             
+  migrate_by(arity: 4) do |a, b, c, d|
+    [b, a]
+  end
 end
 
-pry> HardWorker.migrate!                                                        
+pry> HardWorker.migrate!
 ```
 
-This work will be rescheduled with the new arguements and delete the old job.
+This work will be rescheduled with the new arguements. if you also want to delete the old jobs you can add the `delete: true` flag on migrate.
 
 ## Development
 
@@ -120,4 +120,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/migratiq.
-

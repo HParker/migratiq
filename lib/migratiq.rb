@@ -16,11 +16,11 @@ module Migratiq
   end
 
   module ClassMethods
-    def migrate!
+    def migrate!(delete: false)
       method = self.new.method(:perform)
       checker = ArityChecker.new(method)
       outdated_jobs = check_arity(checker, Sidekiq::ScheduledSet.new)
-      migrate_outdated(outdated_jobs)
+      migrate_outdated(outdated_jobs, delete)
     end
 
     def migrate_by(arity:, &block)
@@ -35,10 +35,10 @@ module Migratiq
       }
       end
 
-    def migrate_outdated(outdated)
+    def migrate_outdated(outdated, delete)
       outdated.each do |job|
         next if Sidekiq::ScheduledSet.new.find_job(job['jid']).nil?
-        Sidekiq::ScheduledSet.new.find_job(job['jid']).delete
+        Sidekiq::ScheduledSet.new.find_job(job['jid']).delete if delete || plan_for(job['args'].size)
         if plan_for(job['args'].size)
           new_args = plan_for(job['args'].size).call(job['args'])
           self.perform_in(5, *new_args)
