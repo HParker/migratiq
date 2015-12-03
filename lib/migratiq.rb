@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "migratiq/version"
 require "arity_checker"
 require 'sidekiq/api'
